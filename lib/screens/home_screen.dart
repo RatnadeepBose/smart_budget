@@ -13,12 +13,24 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'SMARTBUDGET',
-          style: TextStyle(
-            fontWeight: FontWeight.w300,
-            letterSpacing: 2.0,
-          ),
+        title: const Column(
+          children: [
+            Text(
+              'SMARTBUDGET',
+              style: TextStyle(
+                fontWeight: FontWeight.w300,
+                letterSpacing: 2.0,
+              ),
+            ),
+            Text(
+              'Ratnadeep Bose',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w300,
+                color: Colors.grey,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
@@ -35,13 +47,10 @@ class HomeScreen extends StatelessWidget {
       body: Column(
         children: [
           // Summary Cards
-          // ... in HomeScreen build method ...
-
-// Summary Cards
           Consumer<TransactionProvider>(
             builder: (context, transactionProvider, child) {
               return Padding(
-                padding: const EdgeInsets.all(12.0), // Reduced padding
+                padding: const EdgeInsets.all(12.0),
                 child: Row(
                   children: [
                     Expanded(
@@ -52,7 +61,7 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.arrow_upward,
                       ),
                     ),
-                    const SizedBox(width: 6), // Reduced spacing
+                    const SizedBox(width: 6),
                     Expanded(
                       child: SummaryCard(
                         title: 'EXPENSE',
@@ -61,7 +70,7 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.arrow_downward,
                       ),
                     ),
-                    const SizedBox(width: 6), // Reduced spacing
+                    const SizedBox(width: 6),
                     Expanded(
                       child: SummaryCard(
                         title: 'BALANCE',
@@ -77,8 +86,6 @@ class HomeScreen extends StatelessWidget {
               );
             },
           ),
-
-// ... rest of the code ...
 
           // Transactions List
           Expanded(
