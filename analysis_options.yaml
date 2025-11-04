@@ -1,0 +1,25 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    - always_declare_return_types
+    - always_require_non_null_named_parameters
+    - annotate_overrides
+    - avoid_init_to_null
+    - avoid_return_types_on_setters
+    - camel_case_types
+    - constant_identifier_names
+    - empty_constructor_bodies
+    - library_names
+    - library_prefixes
+    - no_duplicate_case_values
+    - null_closures
+    - prefer_conditional_assignment
+    - prefer_final_fields
+    - prefer_single_quotes
+    - prefer_is_empty
