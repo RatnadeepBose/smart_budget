@@ -57,15 +57,17 @@ class TransactionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, double> getCategoryExpenses() {
-    Map<String, double> categoryMap = {};
-    for (var transaction in expenses) {
+Map<String, double> getCategoryExpenses() {
+  Map<String, double> categoryMap = {};
+  for (var transaction in expenses) {
+    if (!transaction.isIncome) { // Only count expenses, not income
       categoryMap.update(
         transaction.category,
         (value) => value + transaction.amount,
         ifAbsent: () => transaction.amount,
       );
     }
-    return categoryMap;
   }
+  return categoryMap;
+}
 }

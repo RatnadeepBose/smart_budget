@@ -14,13 +14,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
-
+  
   String _selectedCategory = 'Food';
   DateTime _selectedDate = DateTime.now();
   bool _isIncome = false;
 
   final List<String> _categories = [
-    'Food', 'Transport', 'Shopping', 'Entertainment',
+    'Food', 'Transport', 'Shopping', 'Entertainment', 
     'Bills', 'Healthcare', 'Education', 'Other'
   ];
 
@@ -46,10 +46,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      // For income, use a default category or empty
+      final category = _isIncome ? 'Income' : _selectedCategory;
+      
       final transaction = TransactionModel(
         title: _titleController.text,
         amount: double.parse(_amountController.text),
-        category: _selectedCategory,
+        category: category,
         date: _selectedDate,
         isIncome: _isIncome,
       );
@@ -69,13 +72,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text(
-          'ADD TRANSACTION',
-          style: TextStyle(
-            fontWeight: FontWeight.w300,
-            letterSpacing: 2.0,
-          ),
-        ),
+        title: const Text('Add Transaction'),
         actions: [
           IconButton(
             icon: const Icon(Icons.check, color: Colors.white),
@@ -98,14 +95,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 child: SegmentedButton<bool>(
                   segments: const [
                     ButtonSegment(
-                        value: false,
-                        label: Text('EXPENSE'),
-                        icon: Icon(Icons.arrow_downward)
+                      value: false, 
+                      label: Text('EXPENSE'), 
+                      icon: Icon(Icons.arrow_downward)
                     ),
                     ButtonSegment(
-                        value: true,
-                        label: Text('INCOME'),
-                        icon: Icon(Icons.arrow_upward)
+                      value: true, 
+                      label: Text('INCOME'), 
+                      icon: Icon(Icons.arrow_upward)
                     ),
                   ],
                   selected: {_isIncome},
@@ -116,7 +113,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
+                      (Set<MaterialState> states) {
                         if (states.contains(MaterialState.selected)) {
                           return Colors.white;
                         }
@@ -124,7 +121,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       },
                     ),
                     foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
+                      (Set<MaterialState> states) {
                         if (states.contains(MaterialState.selected)) {
                           return Colors.black;
                         }
@@ -194,40 +191,42 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Category Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                dropdownColor: Colors.grey[900],
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'CATEGORY',
-                  labelStyle: TextStyle(color: Colors.grey[500]),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey[800]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey[800]!),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                ),
-                items: _categories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(
-                      category.toUpperCase(),
-                      style: const TextStyle(color: Colors.white),
+              // Category Dropdown - ONLY SHOW FOR EXPENSES
+              if (!_isIncome) ...[
+                DropdownButtonFormField<String>(
+                  value: _selectedCategory,
+                  dropdownColor: Colors.grey[900],
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'CATEGORY',
+                    labelStyle: TextStyle(color: Colors.grey[500]),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey[800]!),
                     ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCategory = newValue!;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey[800]!),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  items: _categories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(
+                        category.toUpperCase(),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedCategory = newValue!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
 
               // Date Picker
               ListTile(
@@ -263,9 +262,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     side: const BorderSide(color: Colors.white),
                     padding: const EdgeInsets.all(16),
                   ),
-                  child: const Text(
-                    'ADD TRANSACTION',
-                    style: TextStyle(
+                  child: Text(
+                    _isIncome ? 'ADD INCOME' : 'ADD EXPENSE',
+                    style: const TextStyle(
                       fontWeight: FontWeight.w300,
                       letterSpacing: 1.0,
                     ),

@@ -13,33 +13,29 @@ class InsightsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text(
-          'SPENDING INSIGHTS',
-          style: TextStyle(
-            fontWeight: FontWeight.w300,
-            letterSpacing: 2.0,
-          ),
-        ),
+        title: const Text('Spending Insights'),
       ),
       body: Consumer<TransactionProvider>(
         builder: (context, transactionProvider, child) {
           final categoryExpenses = transactionProvider.getCategoryExpenses();
-
+          
           if (categoryExpenses.isEmpty) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.pie_chart, size: 64, color: Colors.grey[700]),
-                  const SizedBox(height: 16),
+                  Icon(Icons.pie_chart, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
                   Text(
                     'No expense data yet',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                 ],
               ),
             );
           }
+
+          final totalExpenses = categoryExpenses.values.fold(0.0, (sum, amount) => sum + amount);
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -50,7 +46,7 @@ class InsightsScreen extends StatelessWidget {
                   height: 300,
                   child: PieChart(
                     PieChartData(
-                      sections: _buildChartSections(categoryExpenses),
+                      sections: _buildChartSections(categoryExpenses, totalExpenses),
                       centerSpaceRadius: 40,
                     ),
                   ),
@@ -59,6 +55,37 @@ class InsightsScreen extends StatelessWidget {
 
                 // Legend
                 ..._buildLegend(categoryExpenses, context),
+                
+                // Total Expenses
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[800]!),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Total Expenses:',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '₹${totalExpenses.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           );
@@ -67,32 +94,31 @@ class InsightsScreen extends StatelessWidget {
     );
   }
 
-  List<PieChartSectionData> _buildChartSections(Map<String, double> categoryExpenses) {
-    final total = categoryExpenses.values.fold(0.0, (sum, amount) => sum + amount);
+  List<PieChartSectionData> _buildChartSections(Map<String, double> categoryExpenses, double totalExpenses) {
     final colors = [
-      Colors.white,
-      Colors.grey[400]!,
-      Colors.grey[600]!,
-      Colors.grey[800]!,
-      Colors.grey[300]!,
-      Colors.grey[500]!,
-      Colors.grey[700]!,
-      Colors.grey[900]!,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.red,
+      Colors.teal,
+      Colors.pink,
+      Colors.amber,
     ];
 
     return categoryExpenses.entries.map((entry) {
       final index = categoryExpenses.keys.toList().indexOf(entry.key);
-      final percentage = (entry.value / total * 100).toStringAsFixed(1);
-
+      final percentage = totalExpenses > 0 ? (entry.value / totalExpenses * 100) : 0;
+      
       return PieChartSectionData(
         color: colors[index % colors.length],
         value: entry.value,
-        title: '$percentage%',
+        title: '${percentage.toStringAsFixed(1)}%',
         radius: 60,
         titleStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: Colors.white,
         ),
       );
     }).toList();
@@ -100,19 +126,22 @@ class InsightsScreen extends StatelessWidget {
 
   List<Widget> _buildLegend(Map<String, double> categoryExpenses, BuildContext context) {
     final colors = [
-      Colors.white,
-      Colors.grey[400]!,
-      Colors.grey[600]!,
-      Colors.grey[800]!,
-      Colors.grey[300]!,
-      Colors.grey[500]!,
-      Colors.grey[700]!,
-      Colors.grey[900]!,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.red,
+      Colors.teal,
+      Colors.pink,
+      Colors.amber,
     ];
 
     return categoryExpenses.entries.map((entry) {
       final index = categoryExpenses.keys.toList().indexOf(entry.key);
-
+      final percentage = categoryExpenses.values.fold(0.0, (sum, amount) => sum + amount) > 0 
+          ? (entry.value / categoryExpenses.values.fold(0.0, (sum, amount) => sum + amount) * 100)
+          : 0;
+      
       return Container(
         decoration: BoxDecoration(
           border: Border(
@@ -129,20 +158,32 @@ class InsightsScreen extends StatelessWidget {
             ),
           ),
           title: Text(
-            entry.key.toUpperCase(),
-            style: TextStyle(
+            entry.key,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              letterSpacing: 0.5,
             ),
           ),
-          trailing: Text(
-            '₹${entry.value.toStringAsFixed(2)}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
-            ),
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '₹${entry.value.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '${percentage.toStringAsFixed(1)}%',
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         ),
       );
