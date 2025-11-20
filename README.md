@@ -69,5 +69,5 @@ Styling: Material 3
 👨‍💻 Author
 Ratnadeep Bose
 
-GitHub: @RatnadeepBose
+GitHub: @RatnadeepBose69420
 
